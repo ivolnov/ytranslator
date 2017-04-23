@@ -13,9 +13,6 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -32,7 +29,7 @@ import static org.mockito.Mockito.when;
 
 public class TranslatorQueryWatcherTest {
 
-    public static final String UI = "ru"; //TODO hardcore!!!!
+    public static final String UI = "ru";
     public static final String QUERY = "time";
     public static final String EMPTY_QUERY = "";
     public static final String DIRECTION = "en-ru";
@@ -46,7 +43,8 @@ public class TranslatorQueryWatcherTest {
                 mock(Dictionary.class),
                 mock(Languages.class),
                 mock(Translator.Listener.class),
-                mock(Dictionary.Listener.class)
+                mock(Dictionary.Listener.class),
+                UI
         );
         final TranslatorQueryWatcher.QueryExecutor executor = spy(watcher.getQueryExecutor());
         final Handler handler = mock(Handler.class);
@@ -76,7 +74,8 @@ public class TranslatorQueryWatcherTest {
                 dictionary,
                 languages,
                 translatorListener,
-                dictionaryListener
+                dictionaryListener,
+                UI
         );
 
         final TranslatorQueryWatcher.QueryExecutor executor = watcher.getQueryExecutor();
@@ -100,7 +99,8 @@ public class TranslatorQueryWatcherTest {
                 mock(Dictionary.class),
                 mock(Languages.class),
                 mock(Translator.Listener.class),
-                dictionaryListener
+                dictionaryListener,
+                UI
         );
 
         final TranslatorQueryWatcher.QueryExecutor executor = watcher.getQueryExecutor();

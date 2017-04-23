@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements
         mTabLayout.setupWithViewPager(mViewPager);
 
         setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         customiseTabs(mTabLayout);
 
@@ -147,15 +146,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public Languages getLanguages() {
-        final String ui = "ru";//TODO: hardcode!!!
-
         return new VolleyLanguages(
                 mVolleyQueue,
                 new VolleyLanguages.RequestBuilder(
                         YandexApi.LANGUAGES_URL,
                         YandexApi.TRANSLATE_KEY
                 ),
-                ui);
+                YandexApi.UI);
     }
 
     @Override

@@ -14,14 +14,17 @@ import com.ivolnov.ytranslator.languages.Languages;
 import com.ivolnov.ytranslator.languages.SwapLanguageButtonListener;
 import com.ivolnov.ytranslator.translator.Translator;
 import com.ivolnov.ytranslator.translator.TranslatorQueryWatcher;
+import com.ivolnov.ytranslator.util.ForceLocaleRule;
 import com.ivolnov.ytranslator.util.RecyclerViewMatcher;
 import com.ivolnov.ytranslator.util.TestingUtils;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -68,6 +71,9 @@ public class UIIntegrationTest {
     private static final String ENGLISH = "Английский";;
     private static final String SHORT_QUERY = "tic tac toe";
     private static final String LONG_QUERY = "Make love not war.";
+
+    @ClassRule
+    public static final ForceLocaleRule localeTestRule = new ForceLocaleRule(new Locale("ru"));
 
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);

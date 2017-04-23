@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YTranslator</string>
+    <string name="action_settings">Настройки</string>
+    <string name="bookmark_icon_active_description">Кнопка активной закладки</string>
+    <string name="bookmark_icon_description">Кнопка закладки</string>
+    <string name="bookmarks_tab_name">Закладки</string>
+    <string name="history_tab_name">История</string>
+    <string name="translator_tab_name">ЯПереводчик</string>
+</resources>

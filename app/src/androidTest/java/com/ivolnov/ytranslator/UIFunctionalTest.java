@@ -9,14 +9,17 @@ import android.widget.TextView;
 
 import com.ivolnov.ytranslator.activities.MainActivity;
 import com.ivolnov.ytranslator.util.DictionaryRecyclerViewTestData;
+import com.ivolnov.ytranslator.util.ForceLocaleRule;
 import com.ivolnov.ytranslator.util.LanguageSpinnerTestData;
 import com.ivolnov.ytranslator.util.TestingUtils;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -84,6 +87,9 @@ public class UIFunctionalTest {
         static final String RUSSIAN = "Русский";
         static final String FRENCH = "Французский";
     }
+
+    @ClassRule
+    public static final ForceLocaleRule localeTestRule = new ForceLocaleRule(new Locale("ru"));
 
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);

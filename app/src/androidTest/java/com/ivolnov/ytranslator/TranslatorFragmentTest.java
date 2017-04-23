@@ -18,18 +18,21 @@ import com.ivolnov.ytranslator.db.EventLog;
 import com.ivolnov.ytranslator.dictionary.Dictionary;
 import com.ivolnov.ytranslator.fragments.TranslatorFragment;
 import com.ivolnov.ytranslator.languages.LanguageSpinner;
-import com.ivolnov.ytranslator.languages.LanguagesUIState;
 import com.ivolnov.ytranslator.languages.Languages;
+import com.ivolnov.ytranslator.languages.LanguagesUIState;
 import com.ivolnov.ytranslator.languages.VolleyLanguages;
 import com.ivolnov.ytranslator.translator.Translator;
+import com.ivolnov.ytranslator.util.ForceLocaleRule;
 import com.ivolnov.ytranslator.util.LanguageSpinnerTestData;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
+import java.util.Locale;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -52,6 +55,9 @@ import static org.mockito.Mockito.verify;
 public class TranslatorFragmentTest {
 
     private final int UI_DELAY = 500; //milliseconds
+
+    @ClassRule
+    public static final ForceLocaleRule localeTestRule = new ForceLocaleRule(new Locale("ru"));
 
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);

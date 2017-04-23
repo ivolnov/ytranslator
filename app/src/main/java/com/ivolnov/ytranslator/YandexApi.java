@@ -3,6 +3,7 @@ package com.ivolnov.ytranslator;
 import android.content.Context;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -14,6 +15,8 @@ import java.util.Map;
  */
 
 public class YandexApi {
+
+    public static String UI;
 
     public static String TRANSLATE_URL;
     public static String LANGUAGES_URL;
@@ -75,5 +78,6 @@ public class YandexApi {
         TRANSLATE_KEY = context.getResources().getString(R.string.yandex_translate_api_key);
         DICTIONARY_URL = context.getResources().getString(R.string.yandex_dictionary_api_url);
         DICTIONARY_KEY = context.getResources().getString(R.string.yandex_dictionary_api_key);
+        UI = Locale.getDefault().getLanguage();
     }
 }

@@ -22,9 +22,9 @@ import java.util.Collections;
 
 public class TranslatorQueryWatcher implements TextWatcher {
 
-    public static final String UI = "ru";//TODO hardcore!!!!
-
     public static final int TYPING_TIMEOUT = 100; //milliseconds
+
+    private String mUi;
 
     private TextView mTranslation;
     private Translator mTranslator;
@@ -45,6 +45,7 @@ public class TranslatorQueryWatcher implements TextWatcher {
      * @param languages languages instance to be used for translation direction.
      * @param translatorListener a translator listener to pass to translator.
      * @param dictionaryListener a dictionary listener to pass to dictionary.
+     * @param ui a locale language abbreviation.
      */
     public TranslatorQueryWatcher(
             TextView translation,
@@ -52,7 +53,8 @@ public class TranslatorQueryWatcher implements TextWatcher {
             Dictionary dictionary,
             Languages languages,
             Translator.Listener translatorListener,
-            Dictionary.Listener dictionaryListener)
+            Dictionary.Listener dictionaryListener,
+            String ui)
     {
         this.mTranslation = translation;
         this.mTranslator = translator;
@@ -60,11 +62,11 @@ public class TranslatorQueryWatcher implements TextWatcher {
         this.mLanguages = languages;
         this.mTranslatorListener = translatorListener;
         this.mDictionaryListener = dictionaryListener;
+        this.mUi = ui;
     }
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -127,7 +129,7 @@ public class TranslatorQueryWatcher implements TextWatcher {
             if (query.length() > 0) {
                 mTranslator.translate(query, direction, mTranslatorListener);
                 if (lessThanFourWordsIn(query)) {
-                    mDictionary.lookup(query, direction, UI, mDictionaryListener);
+                    mDictionary.lookup(query, direction, mUi, mDictionaryListener);
                 }
             } else {
                 mTranslation.setText("");

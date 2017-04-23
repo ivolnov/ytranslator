@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ivolnov.ytranslator.R;
+import com.ivolnov.ytranslator.YandexApi;
 import com.ivolnov.ytranslator.activities.MainActivity;
 import com.ivolnov.ytranslator.adapters.DictionaryAdapter;
 import com.ivolnov.ytranslator.adapters.LanguageSpinnerAdapter;
@@ -23,8 +24,8 @@ import com.ivolnov.ytranslator.dictionary.Dictionary;
 import com.ivolnov.ytranslator.dictionary.DictionaryItemCompiler;
 import com.ivolnov.ytranslator.languages.LanguageSpinner;
 import com.ivolnov.ytranslator.languages.LanguageSpinnerListener;
-import com.ivolnov.ytranslator.languages.LanguagesUIState;
 import com.ivolnov.ytranslator.languages.Languages;
+import com.ivolnov.ytranslator.languages.LanguagesUIState;
 import com.ivolnov.ytranslator.languages.SourceLanguageSpinnerListener;
 import com.ivolnov.ytranslator.languages.SwapLanguageButtonListener;
 import com.ivolnov.ytranslator.languages.TargetLanguageSpinnerListener;
@@ -352,6 +353,7 @@ public class TranslatorFragment extends Fragment implements Translator.Listener 
                 mDictionary,
                 mLanguages,
                 this,
-                mDictionaryAdapter);
+                mDictionaryAdapter,
+                YandexApi.UI);
     }
 }
