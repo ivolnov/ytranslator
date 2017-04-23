@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryDark">#e1c255</color>
+    <color name="colorPrimary">#ffdc61</color>
+    <color name="colorAccent">#ecd95a</color>
+    <color name="indicator">#ffdd60</color>
+
+    <color name="iconBright">#ffcc00</color>
+    <color name="iconLight">#cbcbcb</color>
+    <color name="iconDark">#858e98</color>
+
+    <color name="textLightest">#cccccc</color>
+    <color name="textLight">#999999</color>
+    <color name="textMedium">#7f7f7f</color>
+    <color name="textDark">#4b7893</color>
+
+    <color name="textComplementLight">#a37d92</color>
+    <color name="textComplementDark">#8d634d</color>
+
+    <color name="textAccent">#00770f</color>
+</resources>

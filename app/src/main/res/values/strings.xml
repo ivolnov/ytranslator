@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">YTranslator</string>
+    <string name="action_settings">Settings</string>
+    <string name="bookmark_icon_description">A bookmark button</string>
+    <string name="bookmark_icon_active_description">An active bookmark button</string>
+    <string name="yandex_translate_api_key">trnsl.1.1.20170328T140934Z.982e7ddbb604c2f4.9470da9c9df04079d2943dff6ef3c577655f69c0</string>
+    <string name="yandex_dictionary_api_key">dict.1.1.20170331T050816Z.5db32981e8718d83.9363888a95ea1298cd5a42939f7dccb9f7000720</string>
+    <string name="yandex_translate_api_url">https://translate.yandex.net/api/v1.5/tr.json/translate</string>
+    <string name="yandex_get_languages_api_url">https://translate.yandex.net/api/v1.5/tr.json/getLangs</string>
+    <string name="yandex_dictionary_api_url">https://dictionary.yandex.net/api/v1/dicservice.json/lookupMultiple</string>
+    <string name="translator_tab_name">YTranslator</string>
+    <string name="history_tab_name">History</string>
+    <string name="bookmarks_tab_name">Bookmarks</string>
+</resources>

@@ -1,0 +1,394 @@
+{
+  "head": {},
+  "en-ru": {
+    "regular": [
+      {
+        "text": "time",
+        "pos": {
+          "code": "nn",
+          "text": "существительное"
+        },
+        "ts": "taɪm",
+        "tr": [
+          {
+            "text": "время",
+            "pos": {
+              "code": "nn",
+              "text": "существительное"
+            },
+            "gen": {
+              "code": "n",
+              "text": "ср"
+            },
+            "syn": [
+              {
+                "text": "раз",
+                "pos": {
+                  "code": "nn",
+                  "text": "существительное"
+                },
+                "gen": {
+                  "code": "m",
+                  "text": "м"
+                }
+              },
+              {
+                "text": "момент",
+                "pos": {
+                  "code": "nn",
+                  "text": "существительное"
+                },
+                "gen": {
+                  "code": "m",
+                  "text": "м"
+                }
+              },
+              {
+                "text": "срок",
+                "pos": {
+                  "code": "nn",
+                  "text": "существительное"
+                },
+                "gen": {
+                  "code": "m",
+                  "text": "м"
+                }
+              },
+              {
+                "text": "пора",
+                "pos": {
+                  "code": "nn",
+                  "text": "существительное"
+                }
+              },
+              {
+                "text": "период",
+                "pos": {
+                  "code": "nn",
+                  "text": "существительное"
+                },
+                "gen": {
+                  "code": "m",
+                  "text": "м"
+                }
+              }
+            ],
+            "mean": [
+              {
+                "text": "period"
+              },
+              {
+                "text": "once"
+              },
+              {
+                "text": "moment"
+              },
+              {
+                "text": "pore"
+              }
+            ],
+            "ex": [
+              {
+                "text": "daylight saving time",
+                "tr": [
+                  {
+                    "text": "летнее время"
+                  }
+                ]
+              },
+              {
+                "text": "take some time",
+                "tr": [
+                  {
+                    "text": "занять некоторое время"
+                  }
+                ]
+              },
+              {
+                "text": "real time mode",
+                "tr": [
+                  {
+                    "text": "режим реального времени"
+                  }
+                ]
+              },
+              {
+                "text": "expected arrival time",
+                "tr": [
+                  {
+                    "text": "ожидаемое время прибытия"
+                  }
+                ]
+              },
+              {
+                "text": "external time source",
+                "tr": [
+                  {
+                    "text": "внешний источник времени"
+                  }
+                ]
+              },
+              {
+                "text": "next time",
+                "tr": [
+                  {
+                    "text": "следующий раз"
+                  }
+                ]
+              },
+              {
+                "text": "initial time",
+                "tr": [
+                  {
+                    "text": "начальный момент"
+                  }
+                ]
+              },
+              {
+                "text": "reasonable time frame",
+                "tr": [
+                  {
+                    "text": "разумный срок"
+                  }
+                ]
+              },
+              {
+                "text": "winter time",
+                "tr": [
+                  {
+                    "text": "зимняя пора"
+                  }
+                ]
+              },
+              {
+                "text": "incubation time",
+                "tr": [
+                  {
+                    "text": "инкубационный период"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "text": "час",
+            "pos": {
+              "code": "nn",
+              "text": "существительное"
+            },
+            "gen": {
+              "code": "m",
+              "text": "м"
+            },
+            "mean": [
+              {
+                "text": "hour"
+              }
+            ],
+            "ex": [
+              {
+                "text": "checkout time",
+                "tr": [
+                  {
+                    "text": "расчетный час"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "text": "эпоха",
+            "pos": {
+              "code": "nn",
+              "text": "существительное"
+            },
+            "gen": {
+              "code": "f",
+              "text": "ж"
+            },
+            "mean": [
+              {
+                "text": "era"
+              }
+            ]
+          },
+          {
+            "text": "век",
+            "pos": {
+              "code": "nn",
+              "text": "существительное"
+            },
+            "gen": {
+              "code": "m",
+              "text": "м"
+            },
+            "mean": [
+              {
+                "text": "age"
+              }
+            ]
+          },
+          {
+            "text": "такт",
+            "pos": {
+              "code": "nn",
+              "text": "существительное"
+            },
+            "gen": {
+              "code": "m",
+              "text": "м"
+            },
+            "syn": [
+              {
+                "text": "темп",
+                "pos": {
+                  "code": "nn",
+                  "text": "существительное"
+                },
+                "gen": {
+                  "code": "m",
+                  "text": "м"
+                }
+              }
+            ],
+            "mean": [
+              {
+                "text": "cycle"
+              },
+              {
+                "text": "rate"
+              }
+            ]
+          },
+          {
+            "text": "жизнь",
+            "pos": {
+              "code": "nn",
+              "text": "существительное"
+            },
+            "gen": {
+              "code": "f",
+              "text": "ж"
+            },
+            "mean": [
+              {
+                "text": "life"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "time",
+        "pos": {
+          "code": "vrb",
+          "text": "глагол"
+        },
+        "ts": "taɪm",
+        "tr": [
+          {
+            "text": "приурочивать",
+            "pos": {
+              "code": "vrb",
+              "text": "глагол"
+            },
+            "asp": {
+              "code": "im",
+              "text": "несов"
+            }
+          },
+          {
+            "text": "рассчитывать",
+            "pos": {
+              "code": "vrb",
+              "text": "глагол"
+            },
+            "asp": {
+              "code": "im",
+              "text": "несов"
+            },
+            "mean": [
+              {
+                "text": "count"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "time",
+        "pos": {
+          "code": "adj",
+          "text": "прилагательное"
+        },
+        "ts": "taɪm",
+        "tr": [
+          {
+            "text": "временный",
+            "pos": {
+              "code": "adj",
+              "text": "прилагательное"
+            },
+            "syn": [
+              {
+                "text": "временной",
+                "pos": {
+                  "code": "adj",
+                  "text": "прилагательное"
+                }
+              }
+            ],
+            "mean": [
+              {
+                "text": "temporary"
+              }
+            ],
+            "ex": [
+              {
+                "text": "time series model",
+                "tr": [
+                  {
+                    "text": "модель временных рядов"
+                  }
+                ]
+              },
+              {
+                "text": "time correlation function",
+                "tr": [
+                  {
+                    "text": "временная корреляционная функция"
+                  }
+                ]
+              },
+              {
+                "text": "time code",
+                "tr": [
+                  {
+                    "text": "временной код"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "text": "повременный",
+            "pos": {
+              "code": "adj",
+              "text": "прилагательное"
+            },
+            "ex": [
+              {
+                "text": "time payment",
+                "tr": [
+                  {
+                    "text": "повременная оплата"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

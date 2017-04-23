@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="30">
+
+
+    <ImageButton
+        android:id="@+id/bookmark_icon"
+        android:layout_width="@dimen/zero"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="4"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/bookmark_icon_description"
+        android:src="@drawable/ic_bookmark_grey_24dp" />
+
+    <LinearLayout
+        android:layout_weight="21"
+        android:layout_width="@dimen/zero"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/historyQuery"
+            style="@android:style/TextAppearance.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingBottom="@dimen/tiny_padding"
+            android:paddingEnd="@dimen/edit_text_padding"
+            android:paddingLeft="@dimen/edit_text_padding"
+            android:paddingRight="@dimen/edit_text_padding"
+            android:paddingStart="@dimen/edit_text_padding" />
+
+        <TextView
+            android:id="@+id/historyTranslation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingEnd="@dimen/edit_text_padding"
+            android:paddingLeft="@dimen/edit_text_padding"
+            android:paddingRight="@dimen/edit_text_padding"
+            android:paddingStart="@dimen/edit_text_padding"
+            android:paddingTop="@dimen/tiny_padding" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/historyDirection"
+        android:layout_width="@dimen/zero"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="5"
+        android:gravity="center"
+        android:lines="1"
+        android:textAlignment="center" />
+</LinearLayout>
