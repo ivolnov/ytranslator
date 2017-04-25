@@ -15,5 +15,4 @@ import org.junit.runners.Suite;
         UIIntegrationTest.class,
         UIFunctionalTest.class
 })
-public class UITestSuite {
-}
+public class UITestSuite {}

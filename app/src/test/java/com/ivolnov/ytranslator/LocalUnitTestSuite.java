@@ -1,5 +1,9 @@
 package com.ivolnov.ytranslator;
 
+import com.ivolnov.ytranslator.db.jobs.BookmarkRecordJob;
+import com.ivolnov.ytranslator.db.jobs.ForceLoadJob;
+import com.ivolnov.ytranslator.db.jobs.InsertRecordJob;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -22,6 +26,10 @@ import org.junit.runners.Suite;
         LanguagesUIStateTest.class,
         HistoryAdapterTest.class,
         BookmarksAdapterTest.class,
+        InsertRecordJobTest.class,
+        BookmarkRecordJobTest.class,
+        UnBookmarkRecordJobTest.class,
+        ForceLoadJobTest.class,
         SQLiteEventLogLoaderTest.class
 })
 public class LocalUnitTestSuite {

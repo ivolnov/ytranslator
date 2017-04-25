@@ -1,12 +1,17 @@
 package com.ivolnov.ytranslator.db;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.util.Pair;
 import android.util.Log;
+
+import com.ivolnov.ytranslator.db.jobs.BookmarkRecordJob;
+import com.ivolnov.ytranslator.db.jobs.ForceLoadJob;
+import com.ivolnov.ytranslator.db.jobs.InsertRecordJob;
+import com.ivolnov.ytranslator.db.jobs.UnBookmarkRecordJob;
 
 /**
  * SQLite powered based on {@link AsyncTaskLoader} implementation of {@link EventLog}.
@@ -16,15 +21,22 @@ import android.util.Log;
  * @since 19.04.17
  */
 
-public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> implements EventLog {
+public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>>
+        implements EventLog {
 
     public static final String TAG = "SQLiteEventLogLoader";
-    /* Day's history of a user who sleeps 8 hours and types a query each second. */
-    public static final int HISTORY_SIZE = 16 * 60 * 60;
+    public static final int HISTORY_SIZE = 16 * 60 * 60; // 16 hours and types a query each second.
+    public static final int USER_TYPING_TIMEOUT = 1000; // milliseconds
 
-    private SQLiteDatabase mDb;
     private DBHelper mHelper;
+    private SQLiteDatabase mDb;
     private Constraint[] mConstraints;
+    private Handler mUiThread;
+    private Handler mWorkerThread;
+    private InsertRecordJob mInsertJob;
+    private BookmarkRecordJob mBookmarkJob;
+    private UnBookmarkRecordJob mUnBookmarkJob;
+    private ForceLoadJob mForceLoadJob;
 
     public SQLiteEventLogLoader(Context context) {
         super(context);
@@ -35,6 +47,8 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
                 new UntranslatedQueryConstraint(),
                 new DuplicatedTranslationConstraint()
         };
+        mUiThread = new Handler(context.getMainLooper());
+        mWorkerThread = new Handler();
     }
 
     @Override
@@ -47,6 +61,7 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
         if (mDb == null) {
             mDb = mHelper.getWritableDatabase();
         }
+        initProperties();
         deleteOldRecords();
         return Pair.create(historyCursor(), bookmarksCursor());
     }
@@ -64,21 +79,18 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
     
     @Override
     public void logTranslation(String query, String translation, String direction) {
-
         if (mDb == null) {
             Log.d(TAG, "Database is not ready to store translation records.");
             return;
         }
 
-        if (allConstraintsSatisfied(query, translation, direction)) {
-            final String table = DBQueries.InsertTranslationQuery.table;
-            final ContentValues values
-                    = DBQueries.InsertTranslationQuery.values(query, translation, direction);
-
-            mDb.insert(table, null,  values);
-
-            forceLoad();
-        }
+        mWorkerThread.removeCallbacks(mInsertJob);
+        mWorkerThread.postDelayed(
+                mInsertJob.withQuery(query)
+                        .withDirection(direction)
+                        .withTranslation(translation)
+                ,
+                USER_TYPING_TIMEOUT);
     }
 
     @Override
@@ -88,14 +100,8 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
             return;
         }
 
-        final String table = DBQueries.UpdateBookmarkedFieldQuery.table;
-        final String selection = DBQueries.UpdateBookmarkedFieldQuery.selection;
-        final String[] args = DBQueries.UpdateBookmarkedFieldQuery.args(index);
-        final ContentValues values = DBQueries.UpdateBookmarkedFieldQuery.values(true);
-
-        mDb.update(table, values, selection, args);
-
-        forceLoad();
+        mBookmarkJob.withIndex(index);
+        mWorkerThread.post(mBookmarkJob);
     }
 
     @Override
@@ -105,14 +111,8 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
             return;
         }
 
-        final String table = DBQueries.UpdateBookmarkedFieldQuery.table;
-        final String selection = DBQueries.UpdateBookmarkedFieldQuery.selection;
-        final String[] args = DBQueries.UpdateBookmarkedFieldQuery.args(index);
-        final ContentValues values = DBQueries.UpdateBookmarkedFieldQuery.values(false);
-
-        mDb.update(table, values, selection, args);
-
-        forceLoad();
+        mUnBookmarkJob.withIndex(index);
+        mWorkerThread.post(mUnBookmarkJob);
     }
 
     public SQLiteEventLogLoader withDatabase(SQLiteDatabase db) {
@@ -130,6 +130,27 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
         return this;
     }
 
+    public SQLiteEventLogLoader withWorkerThread(Handler workerThread) {
+        this.mWorkerThread = workerThread;
+        return this;
+    }
+
+    public SQLiteEventLogLoader withInsertJob(InsertRecordJob insertJob) {
+        this.mInsertJob = insertJob;
+        return this;
+    }
+
+    public SQLiteEventLogLoader withBookmarkJob(BookmarkRecordJob bookmarkJob) {
+        this.mBookmarkJob = bookmarkJob;
+        return this;
+    }
+
+    private void initProperties() {
+        mForceLoadJob = new ForceLoadJob(mUiThread, this);
+        mBookmarkJob = new BookmarkRecordJob(mDb, mForceLoadJob);
+        mUnBookmarkJob = new UnBookmarkRecordJob(mDb, mForceLoadJob);
+        mInsertJob = new InsertRecordJob(mDb, mForceLoadJob, mConstraints);
+    }
 
     private DuplicatedTranslationConstraint getDuplicatedTranslationConstraint() {
         for (Constraint constraint: mConstraints) {
@@ -151,7 +172,7 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
 
         final Cursor cursor = mDb.query(table, projection, null, null, null, null, order);
 
-        getDuplicatedTranslationConstraint().setLastTranslationFrom(cursor);
+        getDuplicatedTranslationConstraint().saveLastTranslationFrom(cursor);
 
         return cursor;
     }
@@ -164,17 +185,6 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
         final String[] args = DBQueries.AllBookmarksQuery.args;
 
         return mDb.query(table, projection, selection, args, null, null, order);
-    }
-
-    private boolean allConstraintsSatisfied(String query, String translation, String direction) {
-
-        for (Constraint constraint: mConstraints) {
-            if (!constraint.ok(query, translation, direction)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -234,7 +244,7 @@ public class SQLiteEventLogLoader extends AsyncTaskLoader<Pair<Cursor, Cursor>> 
          * Sets values of the last accounted translation to compare new ones against.
          * @param cursor a {@link Cursor} with history records.
          */
-        public void setLastTranslationFrom(Cursor cursor) {
+        public void saveLastTranslationFrom(Cursor cursor) {
             final int queryId = cursor
                     .getColumnIndex(DBContract.HistoryEntry.COLUMN_NAME_QUERY);
             final int directionId = cursor

@@ -15,8 +15,6 @@ import com.ivolnov.ytranslator.languages.SwapLanguageButtonListener;
 import com.ivolnov.ytranslator.translator.Translator;
 import com.ivolnov.ytranslator.translator.TranslatorQueryWatcher;
 import com.ivolnov.ytranslator.util.ForceLocaleRule;
-import com.ivolnov.ytranslator.util.RecyclerViewMatcher;
-import com.ivolnov.ytranslator.util.TestingUtils;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -36,9 +34,12 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconInBookmarksWith;
 import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconInHistoryWith;
-import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconOnThFirstListItem;
+import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconOnTheFirstHistoryListItem;
 import static com.ivolnov.ytranslator.util.TestingUtils.clickTranslatorTab;
 import static com.ivolnov.ytranslator.util.TestingUtils.closeSpinner;
+import static com.ivolnov.ytranslator.util.TestingUtils.fetchFirstBookmarksItemTag;
+import static com.ivolnov.ytranslator.util.TestingUtils.fetchFirstHistoryItemTag;
+import static com.ivolnov.ytranslator.util.TestingUtils.fillLists;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -203,21 +204,17 @@ public class UIIntegrationTest {
 
     @Test
     public void whenBookmarkIconIsClickedInHistory_eventLogIsCalled() throws Exception {
-        final TestingUtils.FetchBookmarkIconTag fetchTag = TestingUtils.fetchBookmarkIconTag();
+
+        fillLists();
+
+        onView(withId(R.id.container)).perform(swipeLeft());
+
+        TimeUnit.MILLISECONDS.sleep(UI_DELAY);
+
+        final int id = fetchFirstHistoryItemTag();
         final EventLog log = spy(rule.getActivity().getEventLog());
+
         rule.getActivity().getHistoryAdapter().withLog(log);
-
-        onView(withId(R.id.query))
-                .perform(typeText(SHORT_QUERY));
-
-        onView(withId(R.id.container))
-                .perform(swipeLeft());
-
-        onView(withRecyclerView(R.id.history)
-                .atPosition(0))
-                .perform(fetchTag);
-
-        final Integer id = fetchTag.getTag();
 
         clickBookmarkIconInHistoryWith(id);
 
@@ -226,21 +223,17 @@ public class UIIntegrationTest {
 
     @Test
     public void whenActiveBookmarkIconIsClickedInHistory_eventLogIsCalled() throws Exception {
-        final TestingUtils.FetchBookmarkIconTag fetchTag = TestingUtils.fetchBookmarkIconTag();
+
+        fillLists();
+
+        onView(withId(R.id.container)).perform(swipeLeft());
+        TimeUnit.MILLISECONDS.sleep(UI_DELAY);
+        clickBookmarkIconOnTheFirstHistoryListItem();
+
+        final int id = fetchFirstHistoryItemTag();
         final EventLog log = spy(rule.getActivity().getEventLog());
+
         rule.getActivity().getHistoryAdapter().withLog(log);
-
-        onView(withId(R.id.query))
-                .perform(typeText(SHORT_QUERY))
-                .perform(swipeLeft());
-
-        clickBookmarkIconOnThFirstListItem();
-
-        onView(withRecyclerView(R.id.history)
-                .atPosition(0))
-                .perform(fetchTag);
-
-        final Integer id = fetchTag.getTag();
 
         clickBookmarkIconInHistoryWith(id);
 
@@ -249,34 +242,23 @@ public class UIIntegrationTest {
 
     @Test
     public void whenBookmarkIconIsClickedInBookmarks_eventLogIsCalled() throws Exception {
-        final TestingUtils.FetchBookmarkIconTag fetchTag = TestingUtils.fetchBookmarkIconTag();
-        final EventLog log = spy(rule.getActivity().getEventLog());
-        rule.getActivity().getBookmarksAdapter().withLog(log);
 
-        onView(withId(R.id.query))
-                .perform(typeText(SHORT_QUERY))
-                .perform(swipeLeft());
-
-        clickBookmarkIconOnThFirstListItem();
+        fillLists();
 
         onView(withId(R.id.container))
+                .perform(swipeLeft())
                 .perform(swipeLeft());
 
-        onView(withRecyclerView(R.id.bookmarks)
-                .atPosition(0))
-                .perform(fetchTag);
-
-        final Integer id = fetchTag.getTag();
-
         TimeUnit.MILLISECONDS.sleep(UI_DELAY);
+
+        final int id = fetchFirstBookmarksItemTag();
+        final EventLog log = spy(rule.getActivity().getEventLog());
+
+        rule.getActivity().getBookmarksAdapter().withLog(log);
 
         clickBookmarkIconInBookmarksWith(id);
 
         verify(log, times(1)).logUnBookmarked(id);
-    }
-
-    private static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
-        return new RecyclerViewMatcher(recyclerViewId);
     }
 
     private TranslatorFragment getTranslatorFragment() {

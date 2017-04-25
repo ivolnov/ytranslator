@@ -46,7 +46,7 @@ public class TranslatorQueryWatcherTest {
                 mock(Dictionary.Listener.class),
                 UI
         );
-        final TranslatorQueryWatcher.QueryExecutor executor = spy(watcher.getQueryExecutor());
+        final TranslatorQueryWatcher.QueryDeliverer executor = spy(watcher.getQueryExecutor());
         final Handler handler = mock(Handler.class);
         watcher.withQueryExecutor(executor);
         watcher.withQueryHandler(handler);
@@ -78,7 +78,7 @@ public class TranslatorQueryWatcherTest {
                 UI
         );
 
-        final TranslatorQueryWatcher.QueryExecutor executor = watcher.getQueryExecutor();
+        final TranslatorQueryWatcher.QueryDeliverer executor = watcher.getQueryExecutor();
         executor.withQuery(QUERY);
 
         executor.run();
@@ -103,7 +103,7 @@ public class TranslatorQueryWatcherTest {
                 UI
         );
 
-        final TranslatorQueryWatcher.QueryExecutor executor = watcher.getQueryExecutor();
+        final TranslatorQueryWatcher.QueryDeliverer executor = watcher.getQueryExecutor();
         executor.withQuery(EMPTY_QUERY);
 
         executor.run();

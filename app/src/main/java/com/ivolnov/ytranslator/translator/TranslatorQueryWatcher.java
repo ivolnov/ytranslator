@@ -34,7 +34,7 @@ public class TranslatorQueryWatcher implements TextWatcher {
     private Dictionary.Listener mDictionaryListener;
 
     private Handler mQueryHandler = new Handler();
-    private QueryExecutor mExecutor = new QueryExecutor();
+    private QueryDeliverer mDeliverer = new QueryDeliverer();
 
     /**
      * Constructor.
@@ -71,9 +71,9 @@ public class TranslatorQueryWatcher implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        mQueryHandler.removeCallbacks(mExecutor);
-        mExecutor.withQuery(s.toString());
-        mQueryHandler.postDelayed(mExecutor, TYPING_TIMEOUT);
+        mQueryHandler.removeCallbacks(mDeliverer);
+        mDeliverer.withQuery(s.toString());
+        mQueryHandler.postDelayed(mDeliverer, TYPING_TIMEOUT);
     }
 
     @Override
@@ -89,8 +89,8 @@ public class TranslatorQueryWatcher implements TextWatcher {
         return mDictionary;
     }
 
-    public QueryExecutor getQueryExecutor() {
-        return mExecutor;
+    public QueryDeliverer getQueryExecutor() {
+        return mDeliverer;
     }
 
     public TranslatorQueryWatcher withTranslator(Translator translator) {
@@ -108,8 +108,8 @@ public class TranslatorQueryWatcher implements TextWatcher {
         return this;
     }
 
-    public TranslatorQueryWatcher withQueryExecutor(QueryExecutor executor) {
-        this.mExecutor = executor;
+    public TranslatorQueryWatcher withQueryExecutor(QueryDeliverer deliverer) {
+        this.mDeliverer = deliverer;
         return this;
     }
 
@@ -117,7 +117,7 @@ public class TranslatorQueryWatcher implements TextWatcher {
      * {@link Runnable} that delegates query to all of the interested parties.
      * Used as a callback that can be scheduled concurrently with a  delay or etc.
      */
-    public class QueryExecutor implements Runnable {
+    public class QueryDeliverer implements Runnable {
 
         private String query;
 
@@ -137,7 +137,7 @@ public class TranslatorQueryWatcher implements TextWatcher {
             }
         }
 
-        public QueryExecutor withQuery(String query) {
+        public QueryDeliverer withQuery(String query) {
             this.query = query;
             return this;
         }

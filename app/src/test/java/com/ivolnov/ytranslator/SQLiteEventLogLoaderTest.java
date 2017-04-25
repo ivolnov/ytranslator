@@ -4,12 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.util.Pair;
-
 
 import com.ivolnov.ytranslator.db.DBHelper;
 import com.ivolnov.ytranslator.db.EventLog;
 import com.ivolnov.ytranslator.db.SQLiteEventLogLoader;
+import com.ivolnov.ytranslator.db.jobs.BookmarkRecordJob;
+import com.ivolnov.ytranslator.db.jobs.InsertRecordJob;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,6 +21,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
 
+import static com.ivolnov.ytranslator.db.DBContract.HistoryEntry;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,12 +34,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static com.ivolnov.ytranslator.db.DBContract.*;
-
 /**
  * {@link SQLiteEventLogLoader} local unit tests.
  *
- * {@link RobolectricTestRunner} is used because {@link ContentValues} is a part of android SDK.
+ * {@link RobolectricTestRunner} is used because {@link Handler} is a part of android SDK.
  *
  * @author ivolnov
  * @version %I%, %G%
@@ -55,12 +57,10 @@ public class SQLiteEventLogLoaderTest {
     public static final String LONG_WORD = wordOfLength(MAX + 1);
     public static final String DATABASE = HistoryEntry.TABLE_NAME;
     public static final String SELECTION = null;
-    public static final String BOOKMARK_ID_SELECTION = HistoryEntry._ID + " LIKE ?";
     public static final String BOOKMARKS_SELECTION = HistoryEntry.COLUMN_NAME_BOOKMARKED + " LIKE ?";
     public static final String ORDER = HistoryEntry._ID + " DESC";
     public static final String[] SELECTION_ARGS = null;
     public static final String[] BOOKMARKS_SELECTION_ARGS = {"1"};
-    public static final String[] BOOKMARK_ID_SELECTION_ARGS = {Integer.toString(ID)};
     public static final String[] PROJECTION = {
             HistoryEntry._ID,
             HistoryEntry.COLUMN_NAME_QUERY,
@@ -79,66 +79,56 @@ public class SQLiteEventLogLoaderTest {
 
     @Test
     public void logTranslationTest() throws Exception {
-        final SQLiteDatabase database = mock(SQLiteDatabase.class);
-        final ContentValues values = new ContentValues();
+        final Handler workerThread = mock(Handler.class);
+        final InsertRecordJob job = mock(InsertRecordJob.class);
+        final SQLiteEventLogLoader log = spy(new SQLiteEventLogLoader(mockContext()));
+        log.withWorkerThread(workerThread);
+        log.withInsertJob(job);
+        log.withDatabase(mock(SQLiteDatabase.class));
 
-        values.put(HistoryEntry.COLUMN_NAME_QUERY, QUERY);
-        values.put(HistoryEntry.COLUMN_NAME_DIRECTION, DIRECTION);
-        values.put(HistoryEntry.COLUMN_NAME_TRANSLATION, TRANSLATION);
-
-        SQLiteEventLogLoader log = spy(new SQLiteEventLogLoader(mock(Context.class)));
-        log.withDatabase(database);
-        log.withConstraints(new EventLog.Constraint[]{});
+        when(job.withQuery(any(String.class))).thenReturn(job);
+        when(job.withTranslation(any(String.class))).thenReturn(job);
+        when(job.withDirection(any(String.class))).thenReturn(job);
 
         log.logTranslation(QUERY, TRANSLATION, DIRECTION);
 
-        verify(database, times(1)).insert(eq(DATABASE), nullable(String.class), eq(values));
+        verify(workerThread, times(1)).removeCallbacks(job);
 
-        verify(log, times(1)).forceLoad();
+        verify(job, times(1)).withQuery(QUERY);
+        verify(job, times(1)).withTranslation(TRANSLATION);
+        verify(job, times(1)).withDirection(DIRECTION);
+
+        verify(workerThread, times(1)).postDelayed(job, SQLiteEventLogLoader.USER_TYPING_TIMEOUT);
     }
 
     @Test
     public void logBookmarkedTest() throws Exception {
-        final SQLiteDatabase database = mock(SQLiteDatabase.class);
-        final ContentValues values = new ContentValues();
-
-        values.put(HistoryEntry.COLUMN_NAME_BOOKMARKED, 1);
-
-        SQLiteEventLogLoader log = spy(new SQLiteEventLogLoader(mock(Context.class)));
-        log.withDatabase(database);
-        log.withConstraints(new EventLog.Constraint[]{});
+        final Handler workerThread = mock(Handler.class);
+        final BookmarkRecordJob job = mock(BookmarkRecordJob.class);
+        final SQLiteEventLogLoader log = spy(new SQLiteEventLogLoader(mockContext()));
+        log.withWorkerThread(workerThread);
+        log.withBookmarkJob(job);
+        log.withDatabase(mock(SQLiteDatabase.class));
 
         log.logBookmarked(ID);
 
-        verify(database, times(1)).update(
-                DATABASE,
-                values,
-                BOOKMARK_ID_SELECTION,
-                BOOKMARK_ID_SELECTION_ARGS);
-
-        verify(log, times(1)).forceLoad();
+        verify(job, times(1)).withIndex(ID);
+        verify(workerThread, times(1)).post(job);
     }
 
     @Test
     public void logUnBookmarkedTest() throws Exception {
-        final SQLiteDatabase database = mock(SQLiteDatabase.class);
-        final ContentValues values = new ContentValues();
+        final Handler workerThread = mock(Handler.class);
+        final BookmarkRecordJob job = mock(BookmarkRecordJob.class);
+        final SQLiteEventLogLoader log = spy(new SQLiteEventLogLoader(mockContext()));
+        log.withWorkerThread(workerThread);
+        log.withBookmarkJob(job);
+        log.withDatabase(mock(SQLiteDatabase.class));
 
-        values.put(HistoryEntry.COLUMN_NAME_BOOKMARKED, 0);
+        log.logBookmarked(ID);
 
-        SQLiteEventLogLoader log = spy(new SQLiteEventLogLoader(mock(Context.class)));
-        log.withDatabase(database);
-        log.withConstraints(new EventLog.Constraint[]{});
-
-        log.logUnBookmarked(ID);
-
-        verify(database, times(1)).update(
-                DATABASE,
-                values,
-                BOOKMARK_ID_SELECTION,
-                BOOKMARK_ID_SELECTION_ARGS);
-
-        verify(log, times(1)).forceLoad();
+        verify(job, times(1)).withIndex(ID);
+        verify(workerThread, times(1)).post(job);
     }
 
     @Test
@@ -147,7 +137,7 @@ public class SQLiteEventLogLoaderTest {
         final Cursor bookmarksCursor = mock(Cursor.class);
         final SQLiteDatabase database = mock(SQLiteDatabase.class);
         final DBHelper helper = mock(DBHelper.class);
-        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mock(Context.class));
+        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mockContext());
         final SQLiteEventLogLoader.DuplicatedTranslationConstraint constraint
                 = spy(new SQLiteEventLogLoader.DuplicatedTranslationConstraint());
 
@@ -202,18 +192,20 @@ public class SQLiteEventLogLoaderTest {
                         BOOKMARKS_SELECTION_ARGS,
                         null, null, ORDER);
 
-        verify(constraint, times(1)).setLastTranslationFrom(historyCursor);
+        verify(constraint, times(1)).saveLastTranslationFrom(historyCursor);
     }
 
     @Test
     public void singleCharacterConstraintTest() throws Exception {
         final SQLiteDatabase database = mock(SQLiteDatabase.class);
-        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mock(Context.class));
+        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mockContext());
         final EventLog.Constraint[] constraints
                 = {new SQLiteEventLogLoader.SingleCharacterConstraint()};
+        final InsertRecordJob job
+                = new InsertRecordJob(database, mock(Runnable.class), constraints);
 
-        log.withDatabase(database);
-        log.withConstraints(constraints);
+        log.withDatabase(database); // crucial for correct test
+        log.withInsertJob(job);
 
         log.logTranslation(SINGLE_CHARACTER, SINGLE_CHARACTER + ' ', null);
 
@@ -229,12 +221,14 @@ public class SQLiteEventLogLoaderTest {
     @Test
     public void longSentenceOrWordConstraintTest() throws Exception {
         final SQLiteDatabase database = mock(SQLiteDatabase.class);
-        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mock(Context.class));
+        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mockContext());
         final EventLog.Constraint[] constraints
                 = {new SQLiteEventLogLoader.LongSentenceOrWordConstraint()};
+        final InsertRecordJob job
+                = new InsertRecordJob(database, mock(Runnable.class), constraints);
 
-        log.withDatabase(database);
-        log.withConstraints(constraints);
+        log.withDatabase(database); // crucial for correct test
+        log.withInsertJob(job);
 
         log.logTranslation(LONG_WORD, SINGLE_CHARACTER, null);
 
@@ -250,12 +244,14 @@ public class SQLiteEventLogLoaderTest {
     @Test
     public void untranslatedQueryConstraintTest() throws Exception {
         final SQLiteDatabase database = mock(SQLiteDatabase.class);
-        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mock(Context.class));
+        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mockContext());
         final EventLog.Constraint[] constraints
                 = {new SQLiteEventLogLoader.UntranslatedQueryConstraint()};
+        final InsertRecordJob job
+                = new InsertRecordJob(database, mock(Runnable.class), constraints);
 
-        log.withDatabase(database);
-        log.withConstraints(constraints);
+        log.withDatabase(database); // crucial for correct test
+        log.withInsertJob(job);
 
         log.logTranslation(QUERY, QUERY, null);
 
@@ -275,11 +271,24 @@ public class SQLiteEventLogLoaderTest {
         when(cursor.getString(3)).thenReturn(DIRECTION);
         when(cursor.getCount()).thenReturn(1);
 
-        constraint.setLastTranslationFrom(cursor);
+        constraint.saveLastTranslationFrom(cursor);
 
         Assert.assertThat(constraint.getLastQuery(), is(equalTo(QUERY)));
         Assert.assertThat(constraint.getLastDirection(), is(equalTo(DIRECTION)));
 
+        final SQLiteDatabase database = mock(SQLiteDatabase.class);
+        final SQLiteEventLogLoader log = new SQLiteEventLogLoader(mockContext());
+        final EventLog.Constraint[] constraints = {constraint};
+        final InsertRecordJob job
+                = new InsertRecordJob(database, mock(Runnable.class), constraints);
+
+        log.withDatabase(database); // crucial for correct test
+        log.withInsertJob(job);
+
+        log.logTranslation(QUERY, null, DIRECTION);
+
+        verify(database, never())
+                .insert(any(String.class), nullable(String.class), any(ContentValues.class));
     }
 
     private static String wordOfLength(int length) {
@@ -287,5 +296,10 @@ public class SQLiteEventLogLoaderTest {
         final char[] array = new char[length];
         Arrays.fill(array, FILLER);
         return new String(array);
+    }
+    private Context mockContext() {
+        final Context context = mock(Context.class);
+        when(context.getMainLooper()).thenReturn(mock(Looper.class));
+        return context;
     }
 }

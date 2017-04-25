@@ -1,5 +1,6 @@
 package com.ivolnov.ytranslator.util;
 
+import android.os.SystemClock;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.view.View;
@@ -13,11 +14,16 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.util.Random;
+
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.withChild;
@@ -40,6 +46,9 @@ import static org.hamcrest.CoreMatchers.is;
 
 public class TestingUtils {
 
+    private static long counter
+            = Integer.valueOf(Integer.toString(new Random().nextInt()).substring(0, 3));
+
     /**
      * Make sure no spinners are left open.
      */
@@ -53,9 +62,73 @@ public class TestingUtils {
         }
     }
 
+    /**
+     * Gets you to translator.
+     */
     public static void clickTranslatorTab() {
         onView(first(withParent(withParent(withId(R.id.tabs)))))
                 .perform(click());
+    }
+
+    /**
+     * Fetches icon's tag value from the first item in history list.
+     * @return integer tag for he first icon.
+     */
+    public static int fetchFirstHistoryItemTag() {
+        final TestingUtils.FetchBookmarkIconTag fetchTag = TestingUtils.fetchBookmarkIconTag();
+
+        onView(withRecyclerView(R.id.history)
+                .atPosition(0))
+                .perform(fetchTag);
+
+        return fetchTag.getTag();
+    }
+
+    /**
+     * Fetches icon's tag value from the first item in bookmark list.
+     * @return integer tag for he first icon.
+     */
+    public static int fetchFirstBookmarksItemTag() {
+        final TestingUtils.FetchBookmarkIconTag fetchTag = TestingUtils.fetchBookmarkIconTag();
+
+        onView(withRecyclerView(R.id.bookmarks)
+                .atPosition(0))
+                .perform(fetchTag);
+
+        return fetchTag.getTag();
+    }
+
+    /**
+     * Adds an element to the history list and to the bookmarks list.
+     * - clicks translator tab
+     * - types unique yet short and translatable query
+     * - swipes to history
+     * - bookmarks record
+     * - swipes back
+     * - types another unique yet short and translatable query
+     */
+    public static void fillLists() {
+        final int delay = 500; //milliseconds
+
+        clickTranslatorTab();
+
+        SystemClock.sleep(delay);
+
+        onView(withId(R.id.query)).perform(typeText("Initial record " + counter++));
+
+        SystemClock.sleep(delay * 2);
+
+        onView(withId(R.id.container)).perform(swipeLeft());
+
+        clickBookmarkIconOnTheFirstHistoryListItem();
+
+        onView(withId(R.id.container)).perform(swipeRight());
+
+        onView(withId(R.id.query))
+                .perform(clearText())
+                .perform(typeText("Initial record " + counter++));
+
+        SystemClock.sleep(delay * 2);
     }
 
     /**
@@ -116,7 +189,7 @@ public class TestingUtils {
     /**
      * Clicks bookmark icon of the first item.
      */
-    public static  void clickBookmarkIconOnThFirstListItem() {
+    public static void clickBookmarkIconOnTheFirstHistoryListItem() {
         final TestingUtils.FetchBookmarkIconTag fetchTag = TestingUtils.fetchBookmarkIconTag();
 
         onView(withId(R.id.container))

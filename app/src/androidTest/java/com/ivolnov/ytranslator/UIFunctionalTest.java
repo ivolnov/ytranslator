@@ -40,10 +40,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withSpinnerText
 import static android.support.test.espresso.matcher.ViewMatchers.withTagValue;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconInBookmarksWith;
-import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconOnThFirstListItem;
+import static com.ivolnov.ytranslator.util.TestingUtils.clickBookmarkIconOnTheFirstHistoryListItem;
 import static com.ivolnov.ytranslator.util.TestingUtils.clickFirstBookmarkIconWith;
 import static com.ivolnov.ytranslator.util.TestingUtils.clickTranslatorTab;
 import static com.ivolnov.ytranslator.util.TestingUtils.closeSpinner;
+import static com.ivolnov.ytranslator.util.TestingUtils.fillLists;
 import static com.ivolnov.ytranslator.util.TestingUtils.hasItemCount;
 import static com.ivolnov.ytranslator.util.TestingUtils.withRecyclerView;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -274,7 +275,7 @@ public class UIFunctionalTest {
                 .perform(typeText(TINY_TRANSLATION.ENGLISH))
                 .perform(swipeLeft());
 
-        TimeUnit.MILLISECONDS.sleep(UI_DELAY);
+        TimeUnit.MILLISECONDS.sleep(UI_DELAY * 2);
 
         onView(withRecyclerView(R.id.history).atPosition(0))
                 .check(matches(allOf(
@@ -309,6 +310,9 @@ public class UIFunctionalTest {
 
     @Test
     public void whenUserTypesUntranslatableQuery_historyListStaysTheSame() throws Exception {
+
+        fillLists();
+
         onView(withId(R.id.query))
                 .perform(typeText(UNTRANSLATABLE))
                 .perform(swipeLeft());
@@ -323,7 +327,6 @@ public class UIFunctionalTest {
                         )
                 ));
     }
-
 
     @Test
     public void whenUserClicksBookmarkIconInHistory_thisItemAppearsOnTopOfBookmarksList()
@@ -373,7 +376,7 @@ public class UIFunctionalTest {
 
         onView(withId(R.id.container)).perform(swipeLeft());
 
-        clickBookmarkIconOnThFirstListItem();
+        clickBookmarkIconOnTheFirstHistoryListItem();
 
         onView(withId(R.id.container)).perform(swipeLeft());
 
@@ -407,7 +410,9 @@ public class UIFunctionalTest {
 
         onView(withId(R.id.container)).perform(swipeLeft());
 
-        clickBookmarkIconOnThFirstListItem();
+        TimeUnit.MILLISECONDS.sleep(UI_DELAY * 2);
+
+        clickBookmarkIconOnTheFirstHistoryListItem();
 
         onView(withId(R.id.container)).perform(swipeLeft());
 
@@ -421,7 +426,7 @@ public class UIFunctionalTest {
 
         TimeUnit.MILLISECONDS.sleep(UI_DELAY);
 
-        clickBookmarkIconOnThFirstListItem();
+        clickBookmarkIconOnTheFirstHistoryListItem();
 
         onView(withId(R.id.container))
                 .perform(swipeLeft());
