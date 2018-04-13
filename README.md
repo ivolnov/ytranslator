@@ -1,5 +1,5 @@
 # Ytranslator
-### Test task for 2017 Yandex mobile development school.
+### A test task for 2017 Yandex mobile development school.
 
 An android translator application powered by [yandex translate API ](https://tech.yandex.ru/translate/).
 
